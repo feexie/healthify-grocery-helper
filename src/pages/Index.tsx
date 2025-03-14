@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User, ShoppingCart, Heart, ArrowRight } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Container from '../components/layout/Container';
@@ -24,7 +23,6 @@ const Index = () => {
   };
 
   const handleSendMessage = (content: string) => {
-    // Add user message
     const userMessage: Message = {
       id: crypto.randomUUID(),
       content,
@@ -34,7 +32,6 @@ const Index = () => {
     
     setMessages(prev => [...prev, userMessage]);
     
-    // Simulate assistant response
     setTimeout(() => {
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
@@ -47,7 +44,6 @@ const Index = () => {
     }, 1000);
   };
 
-  // Simple response generation - would be replaced with actual AI in production
   const getAssistantResponse = (userMessage: string): string => {
     const lowerCaseMessage = userMessage.toLowerCase();
     

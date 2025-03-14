@@ -2,6 +2,39 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { VoiceCommand } from '../lib/types';
 
+// Add type definitions for the Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition;
+}
+
+// Extend Window interface to include SpeechRecognition
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 interface UseVoiceRecognitionProps {
   continuous?: boolean;
   interimResults?: boolean;
@@ -41,8 +74,10 @@ const useVoiceRecognition = ({
     }
     
     // Create SpeechRecognition instance
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognitionRef.current = new SpeechRecognition();
+    const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognitionClass) {
+      recognitionRef.current = new SpeechRecognitionClass();
+    }
     
     // Configure recognition
     if (recognitionRef.current) {
